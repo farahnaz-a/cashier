@@ -40,6 +40,21 @@ class SubscriptionController extends Controller
         }
         return view('subscription.create', compact('plans'));
     }
+    public function indexx($id)
+    {
+        $key = \config('services.stripe.secret');
+        $stripe = new \Stripe\StripeClient($key);
+        $plansraw = $stripe->plans->all();
+        $plans = $plansraw->data;
+        
+        foreach($plans as $plan) {
+            $prod = $stripe->products->retrieve(
+                $plan->product,[]
+            );
+            $plan->product = $prod;
+        }
+        return view('subscription.create', compact('plans', 'id'));
+    }
 
     public function orderPost(Request $request)
     {

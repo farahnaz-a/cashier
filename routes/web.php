@@ -17,12 +17,14 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::stripeWebhooks('stripe-webhook');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
 
-Route::get('/subscription/create', [SubscriptionController::class, 'index'])->name('subscription.create');
+Route::get('/subscription/create', [SubscriptionController::class, 'index'])->name('subscription.create.id');
+Route::get('/subscription/create/{id}', [SubscriptionController::class, 'indexx'])->name('subscription.create');
 Route::post('order-post', [SubscriptionController::class, 'orderPost'])->name('order-post');
 Route::post('/stripe/webhook', [SubscriptionController::class, 'webhook'])->name('webhook');
 
