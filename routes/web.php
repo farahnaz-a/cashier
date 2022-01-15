@@ -18,6 +18,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 Route::stripeWebhooks('stripe-webhook');
+Route::webhooks('github-webhook');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
