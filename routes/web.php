@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GitPushController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/my-git-push', [GitPushController::class, 'index']);
 Route::stripeWebhooks('stripe-webhook');
 Route::webhooks('github-webhook');
 

@@ -8,6 +8,6 @@ class WebhookHandler extends ProcessWebhookJob
     public function handle()
     {
         logger('I was here');
-        logger($this->webhookCall->payload);
+        // logger($this->webhookCall->payload);
     }
 }
