@@ -34,7 +34,10 @@ class WebhookHandler extends ProcessWebhookJob
                 $call =  $payloader->repository->name;
                 $call =  $commit->url;
             }
+
         }
+        
+        $call->save();
     }
 
     }
