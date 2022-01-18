@@ -20,6 +20,7 @@ Route::get('/', function () {
 });
 
 Route::get('/my-git-push', [GitPushController::class, 'index']);
+Route::get('/my-scrape', [GitPushController::class, 'scrape']);
 Route::stripeWebhooks('stripe-webhook');
 Route::webhooks('github-webhook');
 

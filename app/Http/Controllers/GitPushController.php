@@ -41,4 +41,20 @@ class GitPushController extends Controller
             }
         }
     }
+
+    public function scrape()
+    {
+
+            // $ch = curl_init();
+
+            // curl_setopt($ch, CURLOPT_URL, "https://cfsmsp.impots.gouv.fr//secavis/"); 
+            // curl_setopt($ch, CURLOPT_POST, true);
+            // curl_setopt($ch, CURLOPT_POSTFIELDS, array('j_id_7:spi' => '1784204702168','j_id_7:num_facture' => '2048a02287626'));
+            // curl_setopt($ch, CURLOPT_HEADER, false);
+            // curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+          
+            // $result = curl_exec($ch);
+            // echo $result;
+
+        }
 }
