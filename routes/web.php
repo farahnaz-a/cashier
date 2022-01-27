@@ -24,6 +24,11 @@ Route::get('/my-scrape', [GitPushController::class, 'scrape']);
 Route::stripeWebhooks('stripe-webhook');
 Route::webhooks('github-webhook');
 
+Route::get('/fiscal', [GitPushController::class, 'fiscal'])->name('fiscal');
+Route::get('/get-result', [GitPushController::class, 'getresult'])->name('getresult');
+Route::get('/check', [GitPushController::class, 'check'])->name('check');
+Route::get('/result', [GitPushController::class, 'res'])->name('res');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');

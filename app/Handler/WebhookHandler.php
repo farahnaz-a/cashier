@@ -14,30 +14,31 @@ class WebhookHandler extends ProcessWebhookJob
 
     foreach($payload as $pay)
     {
-        $payloads[] = json_decode($pay);
+        $payloads[] = $pay;
     }
 
-    foreach($payloads as $payloader)
-    {
-        // dd($payloader);
-        $call = new GithubWebhooks();
-        $call =  $payloader->sender->login; 
-        $call =  $payloader->sender->avatar_url;
-        $call =  $payloader->after;
-        if(isset($payloader->commits))
-        {
-            foreach($payloader->commits as $commit)
-            {
-                $call = $commit->message;
-                $call = $commit->timestamp;
-                // Get repo name
-                $call =  $payloader->repository->name;
-                $call =  $commit->url;
-            }
-
-        }
+    logger($payloads);
+    // foreach($payloads as $payloader)
+    // {
         
-        $call->save();
+    //     $call = new GithubWebhooks();
+    //     $call =  $payloader->sender->login; 
+    //     $call =  $payloader->sender->avatar_url;
+    //     $call =  $payloader->after;
+    //     if(isset($payloader->commits))
+    //     {
+    //         foreach($payloader->commits as $commit)
+    //         {
+    //             $call = $commit->message;
+    //             $call = $commit->timestamp;
+    //             // Get repo name
+    //             $call =  $payloader->repository->name;
+    //             $call =  $commit->url;
+    //         }
+
+    //     }
+
+    //     $call->save();
     }
 
     }

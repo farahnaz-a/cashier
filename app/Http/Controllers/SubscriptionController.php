@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Tester;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Cashier\Cashier;
 use \Stripe\Stripe;
@@ -27,6 +28,8 @@ class SubscriptionController extends Controller
     }
     public function index()
     {
+
+
         $key = \config('services.stripe.secret');
         $stripe = new \Stripe\StripeClient($key);
         $plansraw = $stripe->plans->all();
