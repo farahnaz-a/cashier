@@ -274,50 +274,48 @@ class GitPushController extends Controller
 
             Artisan::call('optimize:clear');
 
-                function downloadPage( $sURL, 
-                $iConnectionTimeOut = 110, 
-                $iTimeOut = 110,
-                $aHeaders = array(),
-                $sPostData = '')
-                {
+                    function downloadPage( $sURL, 
+                    $iConnectionTimeOut = 110, 
+                    $iTimeOut = 110,
+                    $aHeaders = array(),
+                    $sPostData = '')
+                    {
 
-                $sUserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2112.0 Safari/537.36';
-                $sContent = ''; 
-                $ch = curl_init();
-                !empty($aHeaders) ?curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeaders):'';
-                !empty($sProxy)   ?curl_setopt($ch, CURLOPT_PROXY, $sProxy):'';	
-                if(!empty($sPostData))
-                {
-                            curl_setopt($ch, CURLOPT_POST, 1);
-                            curl_setopt($ch, CURLOPT_POSTFIELDS,$sPostData);
-                }
-                curl_setopt($ch, CURLOPT_USERAGENT,$sUserAgent);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-                curl_setopt($ch, CURLOPT_HEADER, false);  	
-                curl_setopt($ch, CURLOPT_COOKIEJAR, COOKIE_FILE);
-                curl_setopt($ch, CURLOPT_COOKIEFILE,COOKIE_FILE);
-                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$iConnectionTimeOut);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-                curl_setopt($ch, CURLOPT_TIMEOUT, $iTimeOut);
-                curl_setopt($ch, CURLOPT_URL, $sURL);
-                curl_setopt($ch, CURLOPT_ENCODING, "gzip");
-                $sContent = curl_exec($ch);
-                $aInfo = curl_getinfo($ch);
-                curl_close($ch);
-                $sContent = str_replace("\t","",$sContent);
-                $sContent = str_replace("\r","",$sContent);
-                $sContent = str_replace("\n","",$sContent);
-                return $sContent;
-                }
+                    $sUserAgent = 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/38.0.2112.0 Safari/537.36';
+                    $sContent = ''; 
+                    $ch = curl_init();
+                    !empty($aHeaders) ?curl_setopt($ch, CURLOPT_HTTPHEADER, $aHeaders):'';
+                    !empty($sProxy)   ?curl_setopt($ch, CURLOPT_PROXY, $sProxy):'';	
+                    if(!empty($sPostData))
+                    {
+                                curl_setopt($ch, CURLOPT_POST, 1);
+                                curl_setopt($ch, CURLOPT_POSTFIELDS,$sPostData);
+                    }
+                    curl_setopt($ch, CURLOPT_USERAGENT,$sUserAgent);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+                    curl_setopt($ch, CURLOPT_HEADER, false);  	
+                    curl_setopt($ch, CURLOPT_COOKIEJAR, COOKIE_FILE);
+                    curl_setopt($ch, CURLOPT_COOKIEFILE,COOKIE_FILE);
+                    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT,$iConnectionTimeOut);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+                    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+                    curl_setopt($ch, CURLOPT_TIMEOUT, $iTimeOut);
+                    curl_setopt($ch, CURLOPT_URL, $sURL);
+                    curl_setopt($ch, CURLOPT_ENCODING, "gzip");
+                    $sContent = curl_exec($ch);
+                    $aInfo = curl_getinfo($ch);
+                    curl_close($ch);
+                    $sContent = str_replace("\t","",$sContent);
+                    $sContent = str_replace("\r","",$sContent);
+                    $sContent = str_replace("\n","",$sContent);
+                    return $sContent;
+                    }
 
-
-
-            $sUser      = isset($_GET['user'])?$_GET['user']:'';
+            $sUser      = isset($_GET['user'])? $_GET['user']:'';
             $sPassword  = isset($_GET['password'])?$_GET['password']:'';
             define('COOKIE_FILE','/cookie.txt');
-            $aAnswer = [];
+            $aAnswers = [];
             $sURL = 'https://www.maprimerenov.gouv.fr/prweb/app/default/H9DF1ufnPCNDOGG8PFgaaW3tLvvaZHE9*/!STANDARD?t='.strtotime("-1 day");
             $sPost = 'pzAuth=guest&UserIdentifier='.urlencode($sUser).'&Password='.urlencode($sPassword).'&pyActivity%3DCode-Security.Login=&lockScreenID=&lockScreenPassword=&newPassword=&confirmNewPassword=';
             $aHeaders = ['Host: www.maprimerenov.gouv.fr',
@@ -338,8 +336,40 @@ class GitPushController extends Controller
                         'TE: trailers'];
             $sHTML = downloadPage( $sURL,110,110,$aHeaders,$sPost);
             $sHTML = html_entity_decode($sHTML);
-            /*Parse Data*/
-            preg_match("/Dossier .*?<\/div><div.*?>(.*?)<\/div><\/div><\/div>/",$sHTML,$aData);
+            preg_match_all("/<DIV class='oflowDiv'.*?>(.*?)<\/li>/",$sHTML,$aBlocks);
+            if(isset($aBlocks[1][0]))
+            {
+                for($iBlock = 0; $iBlock < sizeof($aBlocks[1]); $iBlock++)
+                {
+                    $aAnswer = [];
+                    $sBlock = $aBlocks[1][$iBlock];
+                    if(strpos($sBlock,'pyclassname')===false)
+                    {
+                        continue;
+                    }
+                    preg_match("/Dossier .*?<\/div><div.*?>(.*?)<\/div><\/div><\/div>/",$sBlock,$aData);
+                    $aAnswer['dossier'] = isset($aData[1])?$aData[1]:'';
+                    preg_match("/Travaux<\/div><div.*?>(.*?)<\/div><\/div><\/div>/",$sBlock,$aData);
+                    $aAnswer['travaux'] = isset($aData[1])?$aData[1]:'';
+                    preg_match("/Adresse du logement à rénover<\/div><div.*?>(.*?)<\/div>/",$sBlock,$aData);
+                    $aAnswer['adresse'] = isset($aData[1])?strip_tags($aData[1]):'';
+        
+                    preg_match_all("/RESERVE_SPACE='false'><span ><button   data-ctl='Button'.*?>(.*?)<\/button><\/span><\/div>/",$sBlock,$aData);
+                    $aAnswer['status_1'] = isset($aData[1][0])?$aData[1][0]:'';
+                    $aAnswer['status_2'] = isset($aData[1][1])?$aData[1][1]:'';
+        
+                    preg_match("/Date limite de dépôt :<\/div><div.*?>(.*?)<\/div><\/div/",$sBlock,$aData);
+                    $aAnswer['date'] = isset($aData[1])?strip_tags($aData[1]):'';
+        
+                    preg_match("/subvention<\/div><\/div><\/div><\/div><\/div><div.*?><span.*?><span.*?>(.*?)€<\/span><\/span><\/div><\/div>/",$sBlock,$aData);
+                    $aAnswer['price'] = isset($aData[1])?preg_replace('/\xc2\xa0/', '',$aData[1]):'';
+                    $aAnswers[] = $aAnswer;
+                }
+            }
+        
+            
+            
+            /*preg_match("/Dossier .*?<\/div><div.*?>(.*?)<\/div><\/div><\/div>/",$sHTML,$aData);
             $aAnswer['dossier'] = isset($aData[1])?$aData[1]:'';
             preg_match("/Travaux<\/div><div.*?>(.*?)<\/div><\/div><\/div>/",$sHTML,$aData);
             $aAnswer['travaux'] = isset($aData[1])?$aData[1]:'';
@@ -354,9 +384,9 @@ class GitPushController extends Controller
             $aAnswer['date'] = isset($aData[1])?strip_tags($aData[1]):'';
             
             preg_match("/subvention<\/div><\/div><\/div><\/div><\/div><div.*?><span.*?><span.*?>(.*?)€<\/span><\/span><\/div><\/div>/",$sHTML,$aData);
-            $aAnswer['price'] = isset($aData[1])?preg_replace('/\xc2\xa0/', '',$aData[1]):'';
+            $aAnswer['price'] = isset($aData[1])?preg_replace('/\xc2\xa0/', '',$aData[1]):'';*/
             
-            $aJSONAnswer = json_encode($aAnswer);
+            $aJSONAnswer = json_encode($aAnswers);
             header('Content-type: application/json');
             echo($aJSONAnswer);
             die();
